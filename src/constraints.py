@@ -113,6 +113,20 @@ def end_null_acceleration_constraint(param):
 	b = append([zeros(A.shape[0]-x_size)], [x_end])
 	return A, b
 	
+def alpha_positive_constraint(param):
+	t_end = param["t_init_phases"][-1]
+	size = t_end / param["dt"] * 6.
+	size = size+1
+	print "size = ",size
+	A = zeros([size,size])
+	A[-1,-1] = -1
+	print "A :", A
+	b = zeros(size)
+	b.put(-1,-0.1)
+	print "b = ",b
+	return A,b
+
+
 def __make_id_half(x_size):
 	res = identity(x_size)
 	for i in range(x_size / 2, x_size):
@@ -125,7 +139,9 @@ __constraint_factory = {
 	'end_speed_constraint'				: {'type': 'eq'  , 'var' : 'dc_end', 'fun': end_speed_constraint},
 	'cones_constraint' 		        	: {'type': 'ineq', 'var' : 'w', 'fun': cones_constraint},
 	'com_kinematic_constraint' 		   	: {'type': 'ineq', 'var' : 'x', 'fun': com_kinematic_constraint},
-	'end_null_acceleration_constraint'  : {'type': 'eq'  , 'var' : 'w', 'fun': end_null_acceleration_constraint}}
+	'end_null_acceleration_constraint'  : {'type': 'eq'  , 'var' : 'w', 'fun': end_null_acceleration_constraint},
+	'alpha_positive'                    : {'type': 'ineq'  , 'var' : 'x', 'fun': alpha_positive_constraint}}
+
 
 __parametric_constraint_factory = {
 	'waypoint_reached_constraint'		: {'type': 'eq'  , 'var' : 'c', 'fun': waypoint_reached_constraint},
